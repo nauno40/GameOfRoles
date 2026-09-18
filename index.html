@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Of Roles — Suivi de visionnage</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <h1>🎲 Game Of Roles <span class="subtitle">— suivi de visionnage</span></h1>
+  <div class="header-stats" id="header-stats"></div>
+</header>
+
+<div id="resume-banner" class="resume-banner" hidden>
+  <div class="resume-info">
+    <span class="resume-label">Reprendre</span>
+    <strong id="resume-title"></strong>
+    <span id="resume-time"></span>
+  </div>
+  <button id="resume-btn" class="btn btn-primary">▶ Reprendre</button>
+</div>
+
+<main class="app-main">
+  <section class="player-section">
+    <div id="player-wrap" class="player-wrap">
+      <div id="player"></div>
+    </div>
+    <div id="now-playing" class="now-playing" hidden>
+      <span id="now-playing-code" class="badge"></span>
+      <strong id="now-playing-title"></strong>
+      <span id="now-playing-arc" class="muted"></span>
+    </div>
+  </section>
+
+  <aside class="list-section">
+    <div class="filters" id="filters">
+      <button class="filter-btn active" data-filter="all">Tous</button>
+      <button class="filter-btn" data-filter="todo">À voir</button>
+      <button class="filter-btn" data-filter="in-progress">En cours</button>
+      <button class="filter-btn" data-filter="done">Terminé</button>
+    </div>
+    <div id="episode-list" class="episode-list"></div>
+  </aside>
+</main>
+
+<footer class="app-footer">
+  <span>Outil personnel — données stockées uniquement dans ce navigateur (localStorage).</span>
+  <button id="reset-progress-btn" class="btn btn-danger-ghost">Réinitialiser la progression</button>
+</footer>
+
+<script src="episodes.js"></script>
+<script src="app.js"></script>
+<script src="https://www.youtube.com/iframe_api"></script>
+</body>
+</html>
