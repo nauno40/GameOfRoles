@@ -43,6 +43,7 @@
     saveProgressStore(progress);
     renderEpisodeList();
     renderHeaderStats();
+    renderResumeBanner();
   }
 
   function markCompleted(videoId) {
@@ -205,6 +206,7 @@
     document.getElementById("now-playing-title").textContent = ep.title;
     document.getElementById("now-playing-arc").textContent = ep.arc;
     renderEpisodeList();
+    renderResumeBanner();
 
     if (!player || typeof player.loadVideoById !== "function") {
       pendingLoad = { episode: ep, startSeconds: start };
@@ -228,7 +230,8 @@
   function renderResumeBanner() {
     const banner = document.getElementById("resume-banner");
     const ep = findResumeEpisode();
-    if (!ep) {
+    // Inutile de proposer de "reprendre" l'épisode déjà chargé dans le lecteur.
+    if (!ep || (currentEpisode && ep.id === currentEpisode.id)) {
       banner.hidden = true;
       return;
     }
