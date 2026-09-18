@@ -60,8 +60,7 @@ body {
   gap: 20px;
   padding: 16px 28px;
   border-bottom: 1px solid var(--border-soft);
-  background: rgba(19, 21, 32, 0.6);
-  backdrop-filter: blur(10px);
+  background: var(--bg-elevated);
   position: sticky;
   top: 0;
   z-index: 20;
