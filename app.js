@@ -46,15 +46,38 @@
   }
 
   function markCompleted(videoId) {
-    const existing = progress[videoId] || {};
-    progress[videoId] = {
-      ...existing,
-      completed: true,
-      updatedAt: Date.now(),
-    };
+    setEpisodeDone(videoId, true);
+  }
+
+  // Manual toggle, independent of actual playback — for marking episodes
+  // already seen elsewhere (e.g. before this tool existed).
+  function setEpisodeDone(videoId, done) {
+    if (done) {
+      const existing = progress[videoId] || {};
+      progress[videoId] = { ...existing, completed: true, updatedAt: Date.now() };
+    } else {
+      delete progress[videoId];
+    }
     saveProgressStore(progress);
     renderEpisodeList();
     renderHeaderStats();
+    renderResumeBanner();
+  }
+
+  function setArcDone(arc, done) {
+    for (const ep of GOR_EPISODES) {
+      if (ep.arc !== arc) continue;
+      if (done) {
+        const existing = progress[ep.id] || {};
+        progress[ep.id] = { ...existing, completed: true, updatedAt: Date.now() };
+      } else {
+        delete progress[ep.id];
+      }
+    }
+    saveProgressStore(progress);
+    renderEpisodeList();
+    renderHeaderStats();
+    renderResumeBanner();
   }
 
   function getStatus(ep) {
@@ -262,11 +285,24 @@
       countEl.className = "arc-count";
       const doneCount = eps.filter((ep) => getStatus(ep) === "done").length;
       countEl.textContent = `${doneCount}/${eps.length}`;
+
+      const allDone = doneCount === eps.length;
+      const bulkBtn = document.createElement("button");
+      bulkBtn.type = "button";
+      bulkBtn.className = "arc-bulk-btn";
+      bulkBtn.textContent = allDone ? "Tout démarquer" : "Tout marquer vu";
+      bulkBtn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setArcDone(arc, !allDone);
+      };
+
       const chevron = document.createElement("span");
       chevron.className = "arc-chevron";
       chevron.textContent = "▸";
       summaryEl.appendChild(titleEl);
       summaryEl.appendChild(countEl);
+      summaryEl.appendChild(bulkBtn);
       summaryEl.appendChild(chevron);
       groupEl.appendChild(summaryEl);
 
@@ -337,6 +373,19 @@
     main.appendChild(titleEl);
 
     row.appendChild(main);
+
+    const checkBtn = document.createElement("button");
+    checkBtn.type = "button";
+    checkBtn.className = "ep-check-btn" + (status === "done" ? " checked" : "");
+    checkBtn.title = status === "done" ? "Marquer non vu" : "Marquer comme vu";
+    checkBtn.setAttribute("aria-label", checkBtn.title);
+    checkBtn.textContent = "✓";
+    checkBtn.onclick = (e) => {
+      e.stopPropagation();
+      setEpisodeDone(ep.id, status !== "done");
+    };
+    row.appendChild(checkBtn);
+
     return row;
   }
 
