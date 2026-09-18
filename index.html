@@ -4,37 +4,57 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Game Of Roles — Suivi de visionnage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header class="app-header">
-  <h1>🎲 Game Of Roles <span class="subtitle">— suivi de visionnage</span></h1>
-  <div class="header-stats" id="header-stats"></div>
+  <div class="brand">
+    <span class="brand-dice">🎲</span>
+    <div>
+      <h1>Game Of Roles</h1>
+      <span class="subtitle">Suivi de visionnage</span>
+    </div>
+  </div>
+  <div class="header-progress">
+    <span id="header-stats" class="header-stats"></span>
+    <div class="header-progress-bar"><div id="header-progress-fill" class="header-progress-fill"></div></div>
+  </div>
 </header>
 
-<div id="resume-banner" class="resume-banner" hidden>
-  <div class="resume-info">
-    <span class="resume-label">Reprendre</span>
-    <strong id="resume-title"></strong>
-    <span id="resume-time"></span>
-  </div>
-  <button id="resume-btn" class="btn btn-primary">▶ Reprendre</button>
-</div>
-
 <main class="app-main">
-  <section class="player-section">
+  <section class="player-column">
+    <div id="resume-banner" class="hero-card" hidden>
+      <img id="resume-thumb" class="hero-thumb" alt="">
+      <div class="hero-overlay">
+        <span class="hero-eyebrow">Reprendre la lecture</span>
+        <h2 id="resume-title"></h2>
+        <div class="hero-meta">
+          <span id="resume-arc"></span>
+          <span class="dot-sep">·</span>
+          <span id="resume-time"></span>
+        </div>
+        <button id="resume-btn" class="btn btn-primary btn-lg">▶ Reprendre</button>
+      </div>
+    </div>
+
     <div id="player-wrap" class="player-wrap">
       <div id="player"></div>
     </div>
+
     <div id="now-playing" class="now-playing" hidden>
       <span id="now-playing-code" class="badge"></span>
-      <strong id="now-playing-title"></strong>
-      <span id="now-playing-arc" class="muted"></span>
+      <div class="now-playing-text">
+        <strong id="now-playing-title"></strong>
+        <span id="now-playing-arc" class="muted"></span>
+      </div>
     </div>
   </section>
 
-  <aside class="list-section">
+  <aside class="list-column">
     <div class="filters" id="filters">
       <button class="filter-btn active" data-filter="all">Tous</button>
       <button class="filter-btn" data-filter="todo">À voir</button>
@@ -46,8 +66,8 @@
 </main>
 
 <footer class="app-footer">
-  <span>Outil personnel — données stockées uniquement dans ce navigateur (localStorage).</span>
-  <button id="reset-progress-btn" class="btn btn-danger-ghost">Réinitialiser la progression</button>
+  <span>Outil personnel — progression stockée uniquement dans ce navigateur.</span>
+  <button id="reset-progress-btn" class="link-btn">Réinitialiser la progression</button>
 </footer>
 
 <script src="episodes.js"></script>

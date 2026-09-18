@@ -77,6 +77,10 @@
     }
   }
 
+  function thumbUrl(id, quality) {
+    return `https://i.ytimg.com/vi/${id}/${quality || "mqdefault"}.jpg`;
+  }
+
   // ---------- Episode lookup ----------
 
   const episodesById = new Map(GOR_EPISODES.map((ep) => [ep.id, ep]));
@@ -168,6 +172,7 @@
   function loadEpisode(ep, startSeconds) {
     currentEpisode = ep;
     setSelectedId(ep.id);
+    expandedArcs.add(ep.arc);
 
     const saved = progress[ep.id];
     const start = startSeconds != null ? startSeconds : saved && !saved.completed ? saved.time : 0;
@@ -190,7 +195,8 @@
   function renderHeaderStats() {
     const total = GOR_EPISODES.length;
     const done = GOR_EPISODES.filter((ep) => getStatus(ep) === "done").length;
-    document.getElementById("header-stats").textContent = `${done} / ${total} épisodes terminés`;
+    document.getElementById("header-stats").textContent = `${done} / ${total} terminés`;
+    document.getElementById("header-progress-fill").style.width = `${(done / total) * 100}%`;
   }
 
   function renderResumeBanner() {
@@ -202,7 +208,9 @@
     }
     const p = progress[ep.id];
     banner.hidden = false;
+    document.getElementById("resume-thumb").src = thumbUrl(ep.id, "hqdefault");
     document.getElementById("resume-title").textContent = `${ep.code} — ${ep.title}`;
+    document.getElementById("resume-arc").textContent = ep.arc;
     document.getElementById("resume-time").textContent = `à ${formatTime(p.time)}`;
     document.getElementById("resume-btn").onclick = () => {
       loadEpisode(ep, p.time);
@@ -211,6 +219,7 @@
   }
 
   let activeFilter = "all";
+  const expandedArcs = new Set();
 
   function matchesFilter(ep) {
     if (activeFilter === "all") return true;
@@ -230,21 +239,36 @@
 
     if (groups.size === 0) {
       const empty = document.createElement("div");
-      empty.className = "muted";
-      empty.style.padding = "16px 8px";
+      empty.className = "empty-state";
       empty.textContent = "Aucun épisode dans cette catégorie.";
       container.appendChild(empty);
       return;
     }
 
     for (const [arc, eps] of groups) {
-      const groupEl = document.createElement("div");
+      const groupEl = document.createElement("details");
       groupEl.className = "arc-group";
+      groupEl.open = expandedArcs.has(arc);
+      groupEl.addEventListener("toggle", () => {
+        if (groupEl.open) expandedArcs.add(arc);
+        else expandedArcs.delete(arc);
+      });
 
-      const titleEl = document.createElement("div");
+      const summaryEl = document.createElement("summary");
+      const titleEl = document.createElement("span");
       titleEl.className = "arc-title";
       titleEl.textContent = arc;
-      groupEl.appendChild(titleEl);
+      const countEl = document.createElement("span");
+      countEl.className = "arc-count";
+      const doneCount = eps.filter((ep) => getStatus(ep) === "done").length;
+      countEl.textContent = `${doneCount}/${eps.length}`;
+      const chevron = document.createElement("span");
+      chevron.className = "arc-chevron";
+      chevron.textContent = "▸";
+      summaryEl.appendChild(titleEl);
+      summaryEl.appendChild(countEl);
+      summaryEl.appendChild(chevron);
+      groupEl.appendChild(summaryEl);
 
       for (const ep of eps) {
         groupEl.appendChild(renderEpisodeRow(ep));
@@ -262,9 +286,41 @@
     row.className = "episode-row" + (currentEpisode && currentEpisode.id === ep.id ? " active" : "");
     row.onclick = () => loadEpisode(ep);
 
-    const dot = document.createElement("div");
-    dot.className = "ep-status " + status;
-    row.appendChild(dot);
+    const thumbWrap = document.createElement("div");
+    thumbWrap.className = "ep-thumb-wrap";
+
+    const img = document.createElement("img");
+    img.className = "ep-thumb";
+    img.loading = "lazy";
+    img.alt = "";
+    img.src = thumbUrl(ep.id);
+    thumbWrap.appendChild(img);
+
+    if (status === "done") {
+      const check = document.createElement("div");
+      check.className = "ep-badge-check";
+      check.textContent = "✓";
+      thumbWrap.appendChild(check);
+    }
+
+    if (p && p.duration) {
+      const dur = document.createElement("div");
+      dur.className = "ep-duration";
+      dur.textContent = formatTime(p.duration);
+      thumbWrap.appendChild(dur);
+    }
+
+    if (status === "in-progress" && p && p.duration) {
+      const bar = document.createElement("div");
+      bar.className = "ep-progress-overlay";
+      const fill = document.createElement("div");
+      fill.className = "ep-progress-fill";
+      fill.style.width = Math.min(100, (p.time / p.duration) * 100) + "%";
+      bar.appendChild(fill);
+      thumbWrap.appendChild(bar);
+    }
+
+    row.appendChild(thumbWrap);
 
     const main = document.createElement("div");
     main.className = "ep-main";
@@ -279,16 +335,6 @@
     titleEl.textContent = ep.title;
     titleEl.title = ep.title;
     main.appendChild(titleEl);
-
-    if (status === "in-progress" && p && p.duration) {
-      const bar = document.createElement("div");
-      bar.className = "ep-progress-bar";
-      const fill = document.createElement("div");
-      fill.className = "ep-progress-fill";
-      fill.style.width = Math.min(100, (p.time / p.duration) * 100) + "%";
-      bar.appendChild(fill);
-      main.appendChild(bar);
-    }
 
     row.appendChild(main);
     return row;
