@@ -216,8 +216,11 @@
   // ---------- Rendering ----------
 
   function renderHeaderStats() {
-    const total = GOR_EPISODES.length;
-    const done = GOR_EPISODES.filter((ep) => getStatus(ep) === "done").length;
+    // Les hors-séries ne comptent pas dans la progression : ce ne sont pas
+    // des épisodes de la trame principale.
+    const tracked = GOR_EPISODES.filter((ep) => !ep.bonus);
+    const total = tracked.length;
+    const done = tracked.filter((ep) => getStatus(ep) === "done").length;
     document.getElementById("header-stats").textContent = `${done} / ${total} terminés`;
     document.getElementById("header-progress-fill").style.width = `${(done / total) * 100}%`;
   }
@@ -269,8 +272,10 @@
     }
 
     for (const [arc, eps] of groups) {
+      const isBonus = eps[0].bonus === true;
+
       const groupEl = document.createElement("details");
-      groupEl.className = "arc-group";
+      groupEl.className = "arc-group" + (isBonus ? " arc-group--bonus" : "");
       groupEl.open = expandedArcs.has(arc);
       groupEl.addEventListener("toggle", () => {
         if (groupEl.open) expandedArcs.add(arc);
@@ -280,7 +285,14 @@
       const summaryEl = document.createElement("summary");
       const titleEl = document.createElement("span");
       titleEl.className = "arc-title";
-      titleEl.textContent = arc;
+      // Non-breaking hyphen: avoids an ugly mid-word line break (e.g. "Hors-série").
+      titleEl.textContent = arc.replace(/-/g, "‑");
+      if (isBonus) {
+        const subtitle = document.createElement("span");
+        subtitle.className = "arc-subtitle";
+        subtitle.textContent = "crossovers, spéciaux & récaps — hors trame principale";
+        titleEl.appendChild(subtitle);
+      }
       const countEl = document.createElement("span");
       countEl.className = "arc-count";
       const doneCount = eps.filter((ep) => getStatus(ep) === "done").length;

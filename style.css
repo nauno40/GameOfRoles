@@ -13,6 +13,7 @@
   --accent-soft: rgba(239, 74, 69, 0.16);
   --teal: #3fc7b0;
   --teal-soft: rgba(63, 199, 176, 0.16);
+  --gold: #e3b23c;
   --radius-lg: 16px;
   --radius: 10px;
   --radius-sm: 6px;
@@ -348,6 +349,8 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  word-break: keep-all;
+  hyphens: none;
 }
 
 .arc-title::before {
@@ -357,6 +360,35 @@ body {
   border-radius: 2px;
   background: var(--teal);
   display: inline-block;
+  flex-shrink: 0;
+}
+
+.arc-subtitle {
+  min-width: 0;
+  flex-shrink: 1;
+  text-transform: none;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.72rem;
+  letter-spacing: normal;
+  color: var(--text-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.arc-group--bonus {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+}
+
+.arc-group--bonus .arc-title::before {
+  background: var(--gold);
+}
+
+.arc-group--bonus .arc-bulk-btn:hover {
+  border-color: var(--gold);
 }
 
 .arc-count {

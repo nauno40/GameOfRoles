@@ -163,4 +163,26 @@ const GOR_EPISODES = [
 
   // ---- Odyssée (en cours — 2026) ----
   { arc: "Odyssée", id: "jKtBmDHAJa8", code: "EP01", title: "L'Ascension", date: "2026-09-16" },
+
+  // ---- Hors-série : crossovers, spéciaux et récaps, hors trame principale ----
+  // Volontairement à part (voir README) : pas nécessaires pour suivre l'histoire,
+  // mais sympas à rattraper à l'occasion. Non comptés dans la progression globale.
+  { arc: "Hors-série", bonus: true, id: "eIPM5qAeIp8", code: "HS01", title: "Résumé de la saison 5", date: "2021-09-01" },
+  { arc: "Hors-série", bonus: true, id: "l5HIQOHuFiM", code: "HS02", title: "Les mondes du futur (Festival Frames)", date: "2022-09-15" },
+  { arc: "Hors-série", bonus: true, id: "991cryrnmgE", code: "HS03", title: "Le naufrage de l'Erika (ft. AlphaCast, Angle Droit, Ultia — ZEvent 2022)", date: "2022-09-21" },
+  { arc: "Hors-série", bonus: true, id: "CWIKjApgsTs", code: "HS04", title: "Résumé de la saison 6", date: "2022-10-05" },
+  { arc: "Hors-série", bonus: true, id: "PiwVAQzPILQ", code: "HS05", title: "x World of Warcraft: Dragonflight (ft. Joueur du Grenier & ZeratoR)", date: "2022-11-28" },
+  { arc: "Hors-série", bonus: true, id: "rSC6tDu6JZ0", code: "HS06", title: "x Betrayal at the House on the Hill (ft. Angle Droit, Étoiles, Ultia)", date: "2022-12-06" },
+  { arc: "Hors-série", bonus: true, id: "P3vKSXwND5o", code: "HS07", title: "x Django (ft. MisterV & Baghera Jones)", date: "2023-03-03" },
+  { arc: "Hors-série", bonus: true, id: "PnEbrAYRlkQ", code: "HS08", title: "x Genshin Impact (ft. DamDamLive)", date: "2023-04-27" },
+  { arc: "Hors-série", bonus: true, id: "M8qMavhOuWM", code: "HS09", title: "x Polymanga : Shōnen Suisse (ft. Baghera Jones)", date: "2023-05-08" },
+  { arc: "Hors-série", bonus: true, id: "5orfpgJWd8o", code: "HS10", title: "Soirée enquête", date: "2023-07-03" },
+  { arc: "Hors-série", bonus: true, id: "0Y6PYBlypDM", code: "HS11", title: "Dégâts des autres (ft. Baghera Jones & Ponce)", date: "2023-07-06" },
+  { arc: "Hors-série", bonus: true, id: "FUYtUZzXgLU", code: "HS12", title: "x World of Warcraft: The War Within (ft. Baghera Jones, Cyprien, JDG, ZeratoR)", date: "2024-08-26" },
+  { arc: "Hors-série", bonus: true, id: "th8C0vmLMJQ", code: "HS13", title: "Île sous haute tension (x RTE, ft. Monsieur Bidouille)", date: "2024-10-21" },
+  { arc: "Hors-série", bonus: true, id: "WHh2sytU820", code: "HS14", title: "Agents du paranormal (x Unknown 9: Awakening, ft. Natoo)", date: "2024-10-26" },
+  { arc: "Hors-série", bonus: true, id: "Ik1UkR-N0Pw", code: "HS15", title: "x Musée Guimet", date: "2024-11-28" },
+  { arc: "Hors-série", bonus: true, id: "qgMmgUks1dY", code: "HS16", title: "Le complot impérial (x Musée Guimet)", date: "2025-01-28" },
+  { arc: "Hors-série", bonus: true, id: "Aiboql3MuI4", code: "HS17", title: "Le grand récap (mi-saison Sheol)", date: "2025-10-07" },
+  { arc: "Hors-série", bonus: true, id: "zhMcM-ZJncU", code: "HS18", title: "Elder Quest (ft. Pressea)", date: "2026-04-21" },
 ];

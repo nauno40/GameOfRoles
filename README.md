@@ -43,7 +43,8 @@ usage personnel).
 
 ## Origine de la liste d'épisodes
 
-123 épisodes (2018 → aujourd'hui), sourcés et recoupés le 2026-09-18 depuis :
+141 épisodes (123 trame principale + 18 hors-série, 2018 → aujourd'hui),
+sourcés et recoupés le 2026-09-18 depuis :
 
 - La playlist officielle *"GAME OF ROLES : Jeu de rôle"* sur la chaîne
   YouTube **mistermv** (saisons 5 à 10 + Justice/Odyssée)
@@ -56,10 +57,13 @@ usage personnel).
 Chaque ID vidéo a été vérifié individuellement (titre + disponibilité) avant
 intégration.
 
-**Hors-champ volontaire** : les hors-séries/crossovers ponctuels (ex. *Game
-of Roles x World of Warcraft*, *x Genshin Impact*, *x Django*...) ne sont pas
-inclus — ce ne sont pas des épisodes de la trame principale, donc pas
-nécessaires pour le suivi "où j'en étais dans l'histoire".
+**Hors-série séparé** : les crossovers/spéciaux/récaps ponctuels (ex. *Game
+of Roles x World of Warcraft*, *x Genshin Impact*, *x Django*...) sont dans
+leur propre section "Hors-série" en bas de la liste (`bonus: true` dans
+`episodes.js`) — pas mélangés à la trame principale puisqu'ils n'en font pas
+partie, et pas comptés dans la progression globale ni dans le décompte
+"X / Y terminés" du header, mais toujours suivables (case à cocher, lecture,
+reprise) comme n'importe quel épisode.
 
 ### Maintenir la liste à jour
 
