@@ -59,7 +59,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: 16px 28px;
+  padding: calc(16px + env(safe-area-inset-top)) max(28px, env(safe-area-inset-right)) 16px max(28px, env(safe-area-inset-left));
   border-bottom: 1px solid var(--border-soft);
   background: var(--bg-elevated);
   position: sticky;
@@ -626,7 +626,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 14px 28px;
+  padding: 14px max(28px, env(safe-area-inset-right)) calc(14px + env(safe-area-inset-bottom)) max(28px, env(safe-area-inset-left));
   color: var(--text-faint);
   font-size: 0.78rem;
   flex-wrap: wrap;
