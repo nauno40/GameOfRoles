@@ -91,11 +91,17 @@
   <div class="footer-actions">
     <span id="update-status" class="update-status"></span>
     <button id="update-btn" class="link-btn" hidden>Vérifier les mises à jour</button>
+    <button id="export-btn" class="link-btn">Exporter la progression</button>
+    <button id="import-btn" class="link-btn">Importer</button>
     <button id="reset-progress-btn" class="link-btn">Réinitialiser la progression</button>
   </div>
 </footer>
 
+<input id="import-file" type="file" accept=".json,application/json" hidden>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
 <script src="episodes.js"></script>
+<script src="progress-io.js"></script>
 <script src="app.js"></script>
 <script src="https://www.youtube.com/iframe_api"></script>
 </body>

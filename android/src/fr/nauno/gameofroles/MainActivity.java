@@ -1,6 +1,7 @@
 package fr.nauno.gameofroles;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,6 +13,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.webkit.JavascriptInterface;
+import android.webkit.JsResult;
+import org.json.JSONObject;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import android.widget.Toast;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +39,9 @@ public class MainActivity extends Activity {
     private View customView;
     private WebChromeClient.CustomViewCallback customViewCallback;
     private long updateDownloadId = -1;
+    private static final int REQ_EXPORT = 1001;
+    private static final int REQ_IMPORT = 1002;
+    private String pendingExportContent;
 
     private final BroadcastReceiver downloadReceiver = new BroadcastReceiver() {
         @Override
@@ -53,6 +62,28 @@ public class MainActivity extends Activity {
     };
 
     private class UpdateBridge {
+        @JavascriptInterface
+        public void exportProgress(String json, String fileName) {
+            runOnUiThread(() -> {
+                pendingExportContent = json;
+                Intent i = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                i.addCategory(Intent.CATEGORY_OPENABLE);
+                i.setType("application/json");
+                i.putExtra(Intent.EXTRA_TITLE, fileName);
+                startActivityForResult(i, REQ_EXPORT);
+            });
+        }
+
+        @JavascriptInterface
+        public void importProgress() {
+            runOnUiThread(() -> {
+                Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                i.addCategory(Intent.CATEGORY_OPENABLE);
+                i.setType("*/*");
+                startActivityForResult(i, REQ_IMPORT);
+            });
+        }
+
         @JavascriptInterface
         public String getVersion() {
             try {
@@ -126,6 +157,27 @@ public class MainActivity extends Activity {
 
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
+            public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
+                new AlertDialog.Builder(MainActivity.this)
+                    .setMessage(message)
+                    .setPositiveButton("OK", (d, w) -> result.confirm())
+                    .setNegativeButton("Annuler", (d, w) -> result.cancel())
+                    .setOnCancelListener(d -> result.cancel())
+                    .show();
+                return true;
+            }
+
+            @Override
+            public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+                new AlertDialog.Builder(MainActivity.this)
+                    .setMessage(message)
+                    .setPositiveButton("OK", (d, w) -> result.confirm())
+                    .setOnCancelListener(d -> result.confirm())
+                    .show();
+                return true;
+            }
+
+            @Override
             public void onShowCustomView(View view, CustomViewCallback callback) {
                 if (customView != null) {
                     callback.onCustomViewHidden();
@@ -181,6 +233,33 @@ public class MainActivity extends Activity {
             webView.goBack();
         } else {
             super.onBackPressed();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != RESULT_OK || data == null || data.getData() == null) return;
+        Uri uri = data.getData();
+        try {
+            if (requestCode == REQ_EXPORT && pendingExportContent != null) {
+                try (OutputStream out = getContentResolver().openOutputStream(uri, "wt")) {
+                    out.write(pendingExportContent.getBytes(StandardCharsets.UTF_8));
+                }
+                pendingExportContent = null;
+                Toast.makeText(this, "Progression exportée", Toast.LENGTH_LONG).show();
+            } else if (requestCode == REQ_IMPORT) {
+                ByteArrayOutputStream buf = new ByteArrayOutputStream();
+                try (InputStream in = getContentResolver().openInputStream(uri)) {
+                    byte[] chunk = new byte[8192];
+                    int n;
+                    while ((n = in.read(chunk)) > 0 && buf.size() < 5_000_000) buf.write(chunk, 0, n);
+                }
+                String text = new String(buf.toByteArray(), StandardCharsets.UTF_8);
+                webView.evaluateJavascript("window.gorImportText(" + JSONObject.quote(text) + ")", null);
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Échec : " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 

@@ -25,6 +25,7 @@ chronologique de l'histoire, et retient automatiquement la position de lecture.
 - **Marquage manuel « vu »** : une case par épisode, et « Tout marquer vu » par saison pour rattraper ce qu'on a déjà regardé ailleurs.
 - **Filtres** Tous / À voir / En cours / Terminé, sections repliables avec compteur (`9/15`) et progression globale dans l'en-tête.
 - **Section « Hors-série »** à part (crossovers, spéciaux, récaps) : suivie comme le reste, mais non comptée dans la progression de la trame principale.
+- **Export / import de la progression** (fichier JSON) : pour sauvegarder, ou changer de téléphone / passer du navigateur à l'app. L'import **fusionne** avec la progression actuelle (un épisode terminé l'emporte, sinon la position la plus récente), sans rien supprimer, et ignore les fichiers invalides ou les épisodes inconnus.
 - **100 % local** : la progression est stockée dans le navigateur ou l'app, aucun compte, aucun serveur.
 
 **Application Android**
@@ -59,6 +60,7 @@ puis ouvrir http://localhost:8080/. L'app est aussi installable comme PWA
 |---|---|
 | [`index.html`](index.html), [`style.css`](style.css) | Interface (responsive, thème sombre) |
 | [`app.js`](app.js) | Lecteur, sauvegarde de progression, filtres, mise à jour Android |
+| [`progress-io.js`](progress-io.js) | Format du fichier d'export, validation et fusion à l'import (logique pure) |
 | [`episodes.js`](episodes.js) | Liste des épisodes (arc, ID YouTube, code, titre, date) |
 | [`manifest.json`](manifest.json), [`service-worker.js`](service-worker.js) | PWA |
 | [`android/`](android/) | Wrapper Android : `WebView` native minimale, sans Gradle ni dépendance |
@@ -86,9 +88,9 @@ ou `youtu.be/`), le code, le titre et la date. Pour un hors-série, ajouter
 Prérequis : JDK 17 et SDK Android (platform 34, build-tools 34.0.0) dans `~/android-build`.
 
 ```bash
-echo "1.4 5" > android/version      # nom de version, code de version
+echo "1.6 7" > android/version      # nom de version, code de version
 ./build-apk.sh                        # → dist/GameOfRoles.apk
-gh release create v1.4 dist/GameOfRoles.apk
+gh release create v1.6 dist/GameOfRoles.apk
 ```
 
 L'APK est signé avec `~/android-build/gor.keystore` (créée au premier build).
@@ -97,7 +99,6 @@ une autre clé.
 
 ## Idées non implémentées
 
-- Export/import de la progression pour changer d'appareil
 - Détection automatique des nouveaux épisodes (nécessiterait la YouTube Data API)
 
 ---

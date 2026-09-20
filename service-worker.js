@@ -1,10 +1,11 @@
-const CACHE_NAME = "gor-shell-v2";
+const CACHE_NAME = "gor-shell-v3";
 const SHELL_ASSETS = [
   "./",
   "./index.html",
   "./style.css",
   "./app.js",
   "./episodes.js",
+  "./progress-io.js",
   "./manifest.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png",

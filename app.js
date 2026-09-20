@@ -575,8 +575,80 @@
     }
   }
 
+  // ---------- Export / import de la progression ----------
+
+  let toastTimer = null;
+  function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => (toast.hidden = true), 4500);
+  }
+
+  function exportProgress() {
+    const json = GORProgressIO.build(progress, getSelectedId());
+    const name = GORProgressIO.fileName();
+    if (android && android.exportProgress) {
+      android.exportProgress(json, name); // sélecteur de fichier natif
+      return;
+    }
+    const url = URL.createObjectURL(new Blob([json], { type: "application/json" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    showToast("Progression exportée");
+  }
+
+  function importText(text) {
+    let data;
+    try {
+      data = GORProgressIO.parse(text);
+    } catch (e) {
+      showToast(e.message);
+      return;
+    }
+    const known = {};
+    for (const [id, p] of Object.entries(data.progress)) if (episodesById.has(id)) known[id] = p;
+    if (Object.keys(known).length === 0) {
+      showToast("Aucun épisode reconnu dans ce fichier.");
+      return;
+    }
+    const s = GORProgressIO.summary(known);
+    const question =
+      `Importer cette sauvegarde (${s.done} épisode(s) terminé(s), ${s.inProgress} en cours) ?\n` +
+      "Elle sera fusionnée avec ta progression actuelle : rien n'est supprimé.";
+    if (!confirm(question)) return;
+    progress = GORProgressIO.merge(progress, known);
+    saveProgressStore(progress);
+    renderEpisodeList();
+    renderHeaderStats();
+    renderResumeBanner();
+    showToast("Progression importée");
+  }
+  window.gorImportText = importText; // appelée par l'app Android après le choix du fichier
+
+  function initProgressIO() {
+    const fileInput = document.getElementById("import-file");
+    document.getElementById("export-btn").addEventListener("click", exportProgress);
+    document.getElementById("import-btn").addEventListener("click", () => {
+      if (android && android.importProgress) android.importProgress();
+      else fileInput.click();
+    });
+    fileInput.addEventListener("change", async () => {
+      const file = fileInput.files[0];
+      fileInput.value = "";
+      if (file) importText(await file.text());
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     init();
+    initProgressIO();
     initUpdater();
   });
 

@@ -17,7 +17,7 @@ OUT="$ROOT/dist"
 rm -rf "$BUILD"
 mkdir -p "$BUILD/assets/www" "$BUILD/classes" "$BUILD/dex" "$OUT"
 
-cp "$ROOT"/index.html "$ROOT"/app.js "$ROOT"/episodes.js "$ROOT"/style.css "$ROOT"/manifest.json "$BUILD/assets/www/"
+cp "$ROOT"/index.html "$ROOT"/app.js "$ROOT"/episodes.js "$ROOT"/progress-io.js "$ROOT"/style.css "$ROOT"/manifest.json "$BUILD/assets/www/"
 cp -r "$ROOT/icons" "$BUILD/assets/www/icons"
 
 "$BT/aapt2" compile --dir "$ROOT/android/res" -o "$BUILD/res.zip"
