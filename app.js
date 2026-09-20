@@ -443,8 +443,26 @@
   // ---------- Mise à jour (app Android uniquement) ----------
 
   const RELEASES_API = "https://api.github.com/repos/nauno40/GameOfRoles/releases/latest";
+  const UPDATE_KEY = "gor:update:v1";
+  const CHECK_INTERVAL_MS = 30 * 24 * 3600 * 1000; // vérification automatique : une fois par mois
   const android = window.GORAndroid;
   let pendingUpdate = null;
+
+  function loadUpdateState() {
+    try {
+      return JSON.parse(localStorage.getItem(UPDATE_KEY)) || {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveUpdateState(state) {
+    try {
+      localStorage.setItem(UPDATE_KEY, JSON.stringify(state));
+    } catch (e) {
+      /* ignore */
+    }
+  }
 
   function isNewer(remote, local) {
     const a = remote.replace(/^v/, "").split(".").map(Number);
@@ -457,34 +475,61 @@
     return false;
   }
 
-  function setUpdateStatus(text) {
-    document.getElementById("update-status").textContent = text;
+  function formatDate(ts) {
+    return new Date(ts).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
+  }
+
+  function refreshUpdateStatus() {
+    const state = loadUpdateState();
+    const version = `v${android.getVersion()}`;
+    const status = document.getElementById("update-status");
+    status.textContent = pendingUpdate
+      ? `${version} · ${pendingUpdate.tag} disponible`
+      : state.lastCheck
+        ? `${version} · vérifié le ${formatDate(state.lastCheck)}`
+        : version;
+  }
+
+  function showUpdateBanner() {
+    document.getElementById("update-banner-text").textContent =
+      `Nouvelle version ${pendingUpdate.tag} disponible (actuelle : v${android.getVersion()})`;
+    document.getElementById("update-banner").hidden = false;
   }
 
   async function checkForUpdate(manual) {
     const btn = document.getElementById("update-btn");
     if (manual) {
       btn.disabled = true;
-      setUpdateStatus("Vérification…");
+      document.getElementById("update-status").textContent = "Vérification…";
     }
     try {
       const res = await fetch(RELEASES_API, { headers: { Accept: "application/vnd.github+json" } });
       if (!res.ok) throw new Error(res.status);
       const rel = await res.json();
       const asset = (rel.assets || []).find((a) => a.name.endsWith(".apk"));
-      const current = android.getVersion();
-      if (asset && isNewer(rel.tag_name, current)) {
-        pendingUpdate = { tag: rel.tag_name, url: asset.browser_download_url };
-        document.getElementById("update-banner-text").textContent =
-          `Nouvelle version ${rel.tag_name} disponible (actuelle : v${current})`;
-        document.getElementById("update-banner").hidden = false;
-        setUpdateStatus(`${rel.tag_name} disponible`);
-        btn.textContent = "Mettre à jour";
-      } else if (manual) {
-        setUpdateStatus(`À jour (v${current})`);
+      const state = loadUpdateState();
+      state.lastCheck = Date.now();
+      if (asset && isNewer(rel.tag_name, android.getVersion())) {
+        if (state.tag !== rel.tag_name || manual) state.dismissed = false;
+        state.tag = rel.tag_name;
+        state.url = asset.browser_download_url;
+        pendingUpdate = { tag: state.tag, url: state.url };
+        if (!state.dismissed) showUpdateBanner();
+      } else {
+        pendingUpdate = null;
+        delete state.tag;
+        delete state.url;
+        delete state.dismissed;
+        if (manual) document.getElementById("update-banner").hidden = true;
+      }
+      saveUpdateState(state);
+      refreshUpdateStatus();
+      if (manual && !pendingUpdate) {
+        document.getElementById("update-status").textContent = `À jour (v${android.getVersion()})`;
       }
     } catch (e) {
-      if (manual) setUpdateStatus("Impossible de vérifier (connexion ?)");
+      // Pas de connexion : on ne note pas la vérification, elle sera retentée au prochain lancement.
+      if (manual) document.getElementById("update-status").textContent = "Impossible de vérifier (connexion ?)";
     } finally {
       btn.disabled = false;
     }
@@ -494,7 +539,14 @@
     if (!pendingUpdate) return checkForUpdate(true);
     android.downloadUpdate(pendingUpdate.url, pendingUpdate.tag);
     document.getElementById("update-banner").hidden = true;
-    setUpdateStatus("Téléchargement… l'installation s'ouvrira ensuite");
+    document.getElementById("update-status").textContent = "Téléchargement… l'installation s'ouvrira ensuite";
+  }
+
+  function dismissUpdate() {
+    const state = loadUpdateState();
+    state.dismissed = true;
+    saveUpdateState(state);
+    document.getElementById("update-banner").hidden = true;
   }
 
   function initUpdater() {
@@ -503,8 +555,24 @@
     btn.hidden = false;
     btn.addEventListener("click", startUpdate);
     document.getElementById("update-banner-btn").addEventListener("click", startUpdate);
-    setUpdateStatus(`v${android.getVersion()}`);
-    checkForUpdate(false);
+    document.getElementById("update-banner-dismiss").addEventListener("click", dismissUpdate);
+
+    // Une mise à jour déjà repérée reste signalée tant qu'elle n'est pas installée.
+    const state = loadUpdateState();
+    if (state.tag && state.url && isNewer(state.tag, android.getVersion())) {
+      pendingUpdate = { tag: state.tag, url: state.url };
+      if (!state.dismissed) showUpdateBanner();
+    } else if (state.tag) {
+      delete state.tag;
+      delete state.url;
+      delete state.dismissed;
+      saveUpdateState(state);
+    }
+    refreshUpdateStatus();
+
+    if (!state.lastCheck || Date.now() - state.lastCheck > CHECK_INTERVAL_MS) {
+      checkForUpdate(false);
+    }
   }
 
   document.addEventListener("DOMContentLoaded", () => {

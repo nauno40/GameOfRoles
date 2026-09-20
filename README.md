@@ -1,91 +1,107 @@
-# Game Of Roles — Suivi de visionnage
+# 🎲 Game Of Roles — Suivi de visionnage
 
-Outil personnel (pas de build, pas de backend) pour regarder *Game Of Roles*
-(Fibretigre & Mister MV) dans l'ordre chronologique réel de la partie, et
-reprendre automatiquement là où on s'est arrêté.
+Outil personnel pour regarder ***Game Of Roles*** (Fibretigre & Mister MV) **dans l'ordre**
+et **reprendre exactement là où on s'est arrêté**.
 
-## Utilisation
+La partie de JDR filmée compte des centaines d'heures réparties sur plusieurs
+chaînes YouTube (Madmoizelle, Fibretigre, Mister MV), sans playlist unique
+fiable. Cette app réunit tous les épisodes dans un seul écran, dans l'ordre
+chronologique de l'histoire, et retient automatiquement la position de lecture.
 
-Le lecteur YouTube embarqué a besoin d'être servi en HTTP (pas en `file://`).
-Depuis ce dossier :
+<p align="center">
+  <img src="docs/screenshots/desktop.png" alt="Version ordinateur" width="62%">
+  <img src="docs/screenshots/mobile.png" alt="Version mobile" width="28%">
+</p>
+
+## Fonctionnalités
+
+**Suivi de visionnage**
+- **141 épisodes** dans l'ordre chronologique (2018 → aujourd'hui), groupés par arc :
+  Aria (S1–S3), Le Continent du Phénix, Le Tribunal des Dragons (S5–S7), Justice,
+  Galaxies, Valenthia, Sheol, Justice 1937, Odyssée.
+- **Lecteur YouTube intégré** : la position est sauvegardée toutes les 5 secondes.
+- **Reprise en un clic** : un bandeau « Reprendre la lecture » propose l'épisode en cours, à la seconde près.
+- **Épisode terminé automatiquement** à 95 % de visionnage.
+- **Marquage manuel « vu »** : une case par épisode, et « Tout marquer vu » par saison pour rattraper ce qu'on a déjà regardé ailleurs.
+- **Filtres** Tous / À voir / En cours / Terminé, sections repliables avec compteur (`9/15`) et progression globale dans l'en-tête.
+- **Section « Hors-série »** à part (crossovers, spéciaux, récaps) : suivie comme le reste, mais non comptée dans la progression de la trame principale.
+- **100 % local** : la progression est stockée dans le navigateur ou l'app, aucun compte, aucun serveur.
+
+**Application Android**
+- APK installable, plein écran vidéo, bouton retour géré.
+- **Mise à jour intégrée** : bouton « Mettre à jour » qui télécharge la dernière version depuis GitHub et ouvre l'installateur.
+- **Vérification automatique une fois par mois** : si une nouvelle version existe, un bandeau le signale (avec « Plus tard » pour le masquer). Une mise à jour repérée reste signalée tant qu'elle n'est pas installée.
+
+**Ergonomie mobile**
+- Le lecteur reste épinglé en haut pendant qu'on fait défiler la liste.
+- Grandes zones tactiles, en-tête compact, mode paysage plein écran pour la vidéo.
+
+## Installer sur Android
+
+1. Ouvre la [dernière release](https://github.com/nauno40/GameOfRoles/releases/latest) depuis ton téléphone.
+2. Télécharge `GameOfRoles.apk` et ouvre-le (Android demande d'autoriser l'installation depuis cette source).
+3. Les mises à jour suivantes se font depuis l'app.
+
+## Utiliser dans un navigateur
+
+Le lecteur YouTube a besoin d'être servi en HTTP (pas en `file://`). Depuis ce dossier :
 
 ```bash
 python3 -m http.server 8080
 ```
 
-Puis ouvrir http://localhost:8080/ dans un navigateur.
+puis ouvrir http://localhost:8080/. L'app est aussi installable comme PWA
+(manifeste + service worker).
 
-Toute la progression (dernier épisode, position de lecture, épisodes
-terminés) est stockée uniquement dans le `localStorage` du navigateur utilisé
-— rien n'est envoyé nulle part. Changer de navigateur ou de machine = repartir
-de zéro (l'export/import de progression est une amélioration possible listée
-plus bas).
+## Structure du projet
 
-Pour un accès permanent (par ex. depuis son téléphone), le plus simple est de
-déployer ce dossier tel quel sur GitHub Pages, Netlify ou Vercel (aucun build
-requis, juste servir les fichiers statiques).
+| Fichier | Rôle |
+|---|---|
+| [`index.html`](index.html), [`style.css`](style.css) | Interface (responsive, thème sombre) |
+| [`app.js`](app.js) | Lecteur, sauvegarde de progression, filtres, mise à jour Android |
+| [`episodes.js`](episodes.js) | Liste des épisodes (arc, ID YouTube, code, titre, date) |
+| [`manifest.json`](manifest.json), [`service-worker.js`](service-worker.js) | PWA |
+| [`android/`](android/) | Wrapper Android : `WebView` native minimale, sans Gradle ni dépendance |
+| [`build-apk.sh`](build-apk.sh) | Construit et signe `dist/GameOfRoles.apk` |
 
-## Comment ça marche
+Pas de build, pas de framework : HTML/CSS/JS pur. Aucune clé API YouTube n'est
+nécessaire, la liste d'épisodes est curatée à la main.
 
-- [`episodes.js`](episodes.js) contient la liste de tous les épisodes, dans
-  l'ordre chronologique de diffusion, groupés par arc narratif (Aria, Le
-  Continent du Phénix, Le Tribunal des Dragons, Justice, Galaxies, Valenthia,
-  Sheol, Justice 1937, Odyssée...).
-- [`app.js`](app.js) gère le lecteur (YouTube IFrame Player API), la
-  sauvegarde automatique de la position toutes les 5 secondes, le marquage
-  "terminé" à 95% de visionnage, et le bandeau de reprise en un clic.
-- [`index.html`](index.html) / [`style.css`](style.css) : la page elle-même.
+## Données : d'où viennent les épisodes
 
-Aucune clé API YouTube n'est nécessaire : la liste des épisodes est
-volontairement curatée à la main plutôt qu'interrogée en direct via la
-YouTube Data API (plus simple, plus fiable, pas de quota à gérer pour un
-usage personnel).
+Liste sourcée et recoupée depuis :
+- la playlist officielle *« GAME OF ROLES : Jeu de rôle »* de la chaîne **mistermv** (saisons 5 à 10) ;
+- le wiki communautaire [gameofroles.wiki](https://gameofroles.wiki) (Aria S1–S3, Phénix, diffusés à l'origine sur la chaîne Madmoizelle) ;
+- [TheTVDB](https://thetvdb.com/series/game-of-roles) pour la structure des saisons et les dates.
 
-## Origine de la liste d'épisodes
+Chaque ID vidéo a été vérifié individuellement (titre + disponibilité).
 
-141 épisodes (123 trame principale + 18 hors-série, 2018 → aujourd'hui),
-sourcés et recoupés le 2026-09-18 depuis :
+**Ajouter un épisode** (la partie continue, arc *Odyssée* en cours) : ajouter une
+ligne à la fin de [`episodes.js`](episodes.js) avec l'ID YouTube (ce qui suit `v=`
+ou `youtu.be/`), le code, le titre et la date. Pour un hors-série, ajouter
+`bonus: true` avec `arc: "Hors-série"`.
 
-- La playlist officielle *"GAME OF ROLES : Jeu de rôle"* sur la chaîne
-  YouTube **mistermv** (saisons 5 à 10 + Justice/Odyssée)
-- Le wiki communautaire https://gameofroles.wiki (toutes les saisons,
-  notamment Aria S1-S3 et Le Continent du Phénix, diffusées à l'origine sur
-  la chaîne Madmoizelle)
-- TheTVDB (https://thetvdb.com/series/game-of-roles) pour la structure des
-  saisons et les dates
+## Construire et publier l'APK
 
-Chaque ID vidéo a été vérifié individuellement (titre + disponibilité) avant
-intégration.
+Prérequis : JDK 17 et SDK Android (platform 34, build-tools 34.0.0) dans `~/android-build`.
 
-**Hors-série séparé** : les crossovers/spéciaux/récaps ponctuels (ex. *Game
-of Roles x World of Warcraft*, *x Genshin Impact*, *x Django*...) sont dans
-leur propre section "Hors-série" en bas de la liste (`bonus: true` dans
-`episodes.js`) — pas mélangés à la trame principale puisqu'ils n'en font pas
-partie, et pas comptés dans la progression globale ni dans le décompte
-"X / Y terminés" du header, mais toujours suivables (case à cocher, lecture,
-reprise) comme n'importe quel épisode.
+```bash
+echo "1.4 5" > android/version      # nom de version, code de version
+./build-apk.sh                        # → dist/GameOfRoles.apk
+gh release create v1.4 dist/GameOfRoles.apk
+```
 
-### Maintenir la liste à jour
+L'APK est signé avec `~/android-build/gor.keystore` (créée au premier build).
+**Conserver cette clé** : Android refuse d'installer une mise à jour signée avec
+une autre clé.
 
-La partie continue (arc *Odyssée* en cours). Pour ajouter un nouvel épisode,
-ouvrir [`episodes.js`](episodes.js) et ajouter une ligne à la fin du tableau
-avec l'ID vidéo YouTube (la partie après `v=` ou `youtu.be/`), le code
-d'épisode, le titre et la date — voir le format des entrées existantes.
+## Idées non implémentées
 
-## Roadmap / idées non implémentées
+- Export/import de la progression pour changer d'appareil
+- Détection automatique des nouveaux épisodes (nécessiterait la YouTube Data API)
 
-- Export/import de la progression (JSON) pour changer d'appareil
-- Détection automatique de nouveaux épisodes (nécessiterait la YouTube Data
-  API v3 + une clé)
+---
 
-## App Android (APK)
-
-`./build-apk.sh` produit `dist/GameOfRoles.apk` (WebView embarquant l'app web,
-signée avec la clé locale `~/android-build/gor.keystore` — à conserver pour
-que les mises à jour s'installent par-dessus). La version est dans
-`android/version` (`nom code`, ex. `1.1 2`).
-
-Publier une mise à jour : incrémenter `android/version`, lancer
-`./build-apk.sh`, puis `gh release create vX.Y dist/GameOfRoles.apk`. L'app
-vérifie la dernière release au démarrage et propose « Mettre à jour »
-(téléchargement + installateur Android).
+Projet de fan, non officiel. *Game Of Roles*, ses logos et ses vidéos appartiennent
+à leurs auteurs (Fibretigre, Mister MV et leurs équipes) ; les vidéos sont lues
+depuis YouTube via le lecteur intégré officiel.
