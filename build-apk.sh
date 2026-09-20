@@ -10,6 +10,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
 BT="$TOOLS/sdk/build-tools/34.0.0"
 ANDROID_JAR="$TOOLS/sdk/platforms/android-34/android.jar"
 KEYSTORE="$TOOLS/gor.keystore"
+read -r VERSION_NAME VERSION_CODE < "$ROOT/android/version"
 
 BUILD="$ROOT/android/build"
 OUT="$ROOT/dist"
@@ -23,7 +24,7 @@ cp -r "$ROOT/icons" "$BUILD/assets/www/icons"
 "$BT/aapt2" link -o "$BUILD/base.apk" -I "$ANDROID_JAR" \
   --manifest "$ROOT/android/AndroidManifest.xml" \
   --min-sdk-version 24 --target-sdk-version 34 \
-  --version-code 1 --version-name 1.0 \
+  --version-code "$VERSION_CODE" --version-name "$VERSION_NAME" \
   -A "$BUILD/assets" "$BUILD/res.zip"
 
 javac -source 11 -target 11 -classpath "$ANDROID_JAR" -d "$BUILD/classes" \
@@ -47,4 +48,4 @@ fi
   --out "$OUT/GameOfRoles.apk" "$BUILD/aligned.apk"
 "$BT/apksigner" verify "$OUT/GameOfRoles.apk"
 
-echo "APK prêt : $OUT/GameOfRoles.apk ($(du -h "$OUT/GameOfRoles.apk" | cut -f1))"
+echo "v$VERSION_NAME — APK prêt : $OUT/GameOfRoles.apk ($(du -h "$OUT/GameOfRoles.apk" | cut -f1))"

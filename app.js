@@ -440,7 +440,77 @@
     loadEpisode(initialEp);
   }
 
-  document.addEventListener("DOMContentLoaded", init);
+  // ---------- Mise à jour (app Android uniquement) ----------
+
+  const RELEASES_API = "https://api.github.com/repos/nauno40/GameOfRoles/releases/latest";
+  const android = window.GORAndroid;
+  let pendingUpdate = null;
+
+  function isNewer(remote, local) {
+    const a = remote.replace(/^v/, "").split(".").map(Number);
+    const b = local.replace(/^v/, "").split(".").map(Number);
+    for (let i = 0; i < Math.max(a.length, b.length); i++) {
+      const x = a[i] || 0;
+      const y = b[i] || 0;
+      if (x !== y) return x > y;
+    }
+    return false;
+  }
+
+  function setUpdateStatus(text) {
+    document.getElementById("update-status").textContent = text;
+  }
+
+  async function checkForUpdate(manual) {
+    const btn = document.getElementById("update-btn");
+    if (manual) {
+      btn.disabled = true;
+      setUpdateStatus("Vérification…");
+    }
+    try {
+      const res = await fetch(RELEASES_API, { headers: { Accept: "application/vnd.github+json" } });
+      if (!res.ok) throw new Error(res.status);
+      const rel = await res.json();
+      const asset = (rel.assets || []).find((a) => a.name.endsWith(".apk"));
+      const current = android.getVersion();
+      if (asset && isNewer(rel.tag_name, current)) {
+        pendingUpdate = { tag: rel.tag_name, url: asset.browser_download_url };
+        document.getElementById("update-banner-text").textContent =
+          `Nouvelle version ${rel.tag_name} disponible (actuelle : v${current})`;
+        document.getElementById("update-banner").hidden = false;
+        setUpdateStatus(`${rel.tag_name} disponible`);
+        btn.textContent = "Mettre à jour";
+      } else if (manual) {
+        setUpdateStatus(`À jour (v${current})`);
+      }
+    } catch (e) {
+      if (manual) setUpdateStatus("Impossible de vérifier (connexion ?)");
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  function startUpdate() {
+    if (!pendingUpdate) return checkForUpdate(true);
+    android.downloadUpdate(pendingUpdate.url, pendingUpdate.tag);
+    document.getElementById("update-banner").hidden = true;
+    setUpdateStatus("Téléchargement… l'installation s'ouvrira ensuite");
+  }
+
+  function initUpdater() {
+    if (!android) return;
+    const btn = document.getElementById("update-btn");
+    btn.hidden = false;
+    btn.addEventListener("click", startUpdate);
+    document.getElementById("update-banner-btn").addEventListener("click", startUpdate);
+    setUpdateStatus(`v${android.getVersion()}`);
+    checkForUpdate(false);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    init();
+    initUpdater();
+  });
 
   if ("serviceWorker" in navigator && !navigator.userAgent.includes("GORApp")) {
     window.addEventListener("load", () => {

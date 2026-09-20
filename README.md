@@ -77,3 +77,15 @@ d'épisode, le titre et la date — voir le format des entrées existantes.
 - Export/import de la progression (JSON) pour changer d'appareil
 - Détection automatique de nouveaux épisodes (nécessiterait la YouTube Data
   API v3 + une clé)
+
+## App Android (APK)
+
+`./build-apk.sh` produit `dist/GameOfRoles.apk` (WebView embarquant l'app web,
+signée avec la clé locale `~/android-build/gor.keystore` — à conserver pour
+que les mises à jour s'installent par-dessus). La version est dans
+`android/version` (`nom code`, ex. `1.1 2`).
+
+Publier une mise à jour : incrémenter `android/version`, lancer
+`./build-apk.sh`, puis `gh release create vX.Y dist/GameOfRoles.apk`. L'app
+vérifie la dernière release au démarrage et propose « Mettre à jour »
+(téléchargement + installateur Android).

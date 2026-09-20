@@ -631,3 +631,132 @@ body {
   font-size: 0.78rem;
   flex-wrap: wrap;
 }
+
+/* ---------- Mise à jour (app Android) ---------- */
+
+.update-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px max(28px, env(safe-area-inset-left));
+  background: linear-gradient(90deg, var(--accent-soft), transparent);
+  border-bottom: 1px solid var(--border-soft);
+  font-size: 0.85rem;
+}
+
+.footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.update-status {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.player-dock {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ---------- Ergonomie mobile ---------- */
+
+@media (max-width: 900px) {
+  html, body { height: auto; }
+  .app-header h1, .brand { white-space: nowrap; }
+  .app-header {
+    position: static;
+    padding: calc(10px + env(safe-area-inset-top)) 16px 10px;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+  .brand-dice { font-size: 1.4rem; }
+  .app-header h1 { font-size: 1.05rem; }
+  .subtitle { display: none; }
+  .header-progress { min-width: 0; margin-left: auto; gap: 8px; }
+  .header-progress-bar { width: 64px; }
+
+  .update-banner { padding: 10px 16px; }
+  .update-banner .btn { padding: 8px 14px; flex-shrink: 0; }
+
+  /* Le lecteur reste épinglé en haut pendant qu'on parcourt la liste. */
+  .app-main {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 auto;
+    min-height: auto;
+    padding: 0 0 16px;
+    gap: 12px;
+  }
+  .player-column { display: contents; }
+
+  .hero-card {
+    margin: 12px 12px 0;
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+    border-radius: var(--radius);
+  }
+  .hero-overlay { padding: 14px 16px; }
+  .hero-overlay h2 { font-size: 1.1rem; }
+
+  .player-dock {
+    position: sticky;
+    top: 0;
+    z-index: 15;
+    gap: 0;
+    background: var(--bg);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+  }
+  .player-wrap {
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .now-playing {
+    padding: 8px 12px;
+    gap: 10px;
+    background: var(--bg-elevated);
+  }
+  .now-playing-text strong { font-size: 0.9rem; }
+
+  .list-column {
+    margin: 0 12px;
+    max-height: none;
+    overflow: visible;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+  }
+  .episode-list { overflow: visible; padding: 0 0 8px; }
+  .filters { padding: 4px 0 12px; border-bottom: none; }
+  .filter-btn { flex: 1; padding: 10px 6px; font-size: 0.82rem; text-align: center; }
+
+  .arc-group summary {
+    position: static;
+    padding: 16px 4px 10px;
+    background: transparent;
+  }
+  .arc-bulk-btn { padding: 8px 12px; font-size: 0.72rem; }
+  .arc-chevron { font-size: 0.85rem; padding: 0 4px; }
+
+  .episode-row { padding: 8px 6px; gap: 12px; }
+  .ep-thumb-wrap { width: 120px; }
+  .ep-title { font-size: 0.92rem; }
+  .ep-check-btn { width: 36px; height: 36px; font-size: 1rem; }
+
+  .app-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 8px 16px calc(20px + env(safe-area-inset-bottom));
+  }
+  .link-btn { padding: 8px 0; font-size: 0.85rem; }
+}
+
+/* Téléphone en paysage : le lecteur prend tout l'écran, la liste est dessous. */
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 500px) {
+  .player-dock { position: static; box-shadow: none; }
+  .player-wrap { aspect-ratio: auto; height: 100vh; }
+}

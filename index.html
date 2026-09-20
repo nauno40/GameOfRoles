@@ -36,6 +36,11 @@
   </div>
 </header>
 
+<div id="update-banner" class="update-banner" hidden>
+  <span id="update-banner-text"></span>
+  <button id="update-banner-btn" class="btn btn-primary">Mettre à jour</button>
+</div>
+
 <main class="app-main">
   <section class="player-column">
     <div id="resume-banner" class="hero-card" hidden>
@@ -52,15 +57,17 @@
       </div>
     </div>
 
-    <div id="player-wrap" class="player-wrap">
-      <div id="player"></div>
-    </div>
+    <div class="player-dock">
+      <div id="player-wrap" class="player-wrap">
+        <div id="player"></div>
+      </div>
 
-    <div id="now-playing" class="now-playing" hidden>
-      <span id="now-playing-code" class="badge"></span>
-      <div class="now-playing-text">
-        <strong id="now-playing-title"></strong>
-        <span id="now-playing-arc" class="muted"></span>
+      <div id="now-playing" class="now-playing" hidden>
+        <span id="now-playing-code" class="badge"></span>
+        <div class="now-playing-text">
+          <strong id="now-playing-title"></strong>
+          <span id="now-playing-arc" class="muted"></span>
+        </div>
       </div>
     </div>
   </section>
@@ -77,8 +84,12 @@
 </main>
 
 <footer class="app-footer">
-  <span>Outil personnel — progression stockée uniquement dans ce navigateur.</span>
-  <button id="reset-progress-btn" class="link-btn">Réinitialiser la progression</button>
+  <span id="footer-note">Outil personnel — progression stockée uniquement dans ce navigateur.</span>
+  <div class="footer-actions">
+    <span id="update-status" class="update-status"></span>
+    <button id="update-btn" class="link-btn" hidden>Vérifier les mises à jour</button>
+    <button id="reset-progress-btn" class="link-btn">Réinitialiser la progression</button>
+  </div>
 </footer>
 
 <script src="episodes.js"></script>

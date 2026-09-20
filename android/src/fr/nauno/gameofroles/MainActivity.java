@@ -1,9 +1,18 @@
 package fr.nauno.gameofroles;
 
 import android.app.Activity;
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.webkit.JavascriptInterface;
+import android.widget.Toast;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
@@ -23,6 +32,51 @@ public class MainActivity extends Activity {
     private WebView webView;
     private View customView;
     private WebChromeClient.CustomViewCallback customViewCallback;
+    private long updateDownloadId = -1;
+
+    private final BroadcastReceiver downloadReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+            if (id != updateDownloadId || id == -1) return;
+            DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+            Uri apk = dm.getUriForDownloadedFile(id);
+            if (apk == null) {
+                Toast.makeText(MainActivity.this, "Échec du téléchargement de la mise à jour", Toast.LENGTH_LONG).show();
+                return;
+            }
+            Intent install = new Intent(Intent.ACTION_VIEW);
+            install.setDataAndType(apk, "application/vnd.android.package-archive");
+            install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(install);
+        }
+    };
+
+    private class UpdateBridge {
+        @JavascriptInterface
+        public String getVersion() {
+            try {
+                return getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            } catch (PackageManager.NameNotFoundException e) {
+                return "0";
+            }
+        }
+
+        @JavascriptInterface
+        public void downloadUpdate(String url, String tag) {
+            if (url == null || !url.startsWith("https://github.com/nauno40/GameOfRoles/releases/download/")) return;
+            runOnUiThread(() -> {
+                DownloadManager.Request req = new DownloadManager.Request(Uri.parse(url));
+                req.setTitle("Game Of Roles " + tag);
+                req.setMimeType("application/vnd.android.package-archive");
+                req.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                req.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "GameOfRoles-" + tag + ".apk");
+                DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+                updateDownloadId = dm.enqueue(req);
+                Toast.makeText(MainActivity.this, "Téléchargement de la mise à jour…", Toast.LENGTH_SHORT).show();
+            });
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +92,14 @@ public class MainActivity extends Activity {
         s.setUserAgentString(s.getUserAgentString() + " GORApp");
 
         webView.setBackgroundColor(0xFF0A0B0F);
+        webView.addJavascriptInterface(new UpdateBridge(), "GORAndroid");
+
+        IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+        if (Build.VERSION.SDK_INT >= 33) {
+            registerReceiver(downloadReceiver, filter, Context.RECEIVER_EXPORTED);
+        } else {
+            registerReceiver(downloadReceiver, filter);
+        }
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -120,6 +182,12 @@ public class MainActivity extends Activity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(downloadReceiver);
     }
 
     @Override
