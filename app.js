@@ -442,7 +442,7 @@
 
   document.addEventListener("DOMContentLoaded", init);
 
-  if ("serviceWorker" in navigator) {
+  if ("serviceWorker" in navigator && !navigator.userAgent.includes("GORApp")) {
     window.addEventListener("load", () => {
       navigator.serviceWorker.register("service-worker.js").catch(() => {
         /* pas grave, l'app marche très bien sans */
