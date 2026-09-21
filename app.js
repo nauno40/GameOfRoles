@@ -293,7 +293,7 @@
       if (isBonus) {
         const subtitle = document.createElement("span");
         subtitle.className = "arc-subtitle";
-        subtitle.textContent = "crossovers, spéciaux & récaps — hors trame principale";
+        subtitle.textContent = "crossovers et spéciaux — hors trame principale";
         titleEl.appendChild(subtitle);
       }
       const countEl = document.createElement("span");

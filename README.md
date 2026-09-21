@@ -16,7 +16,7 @@ chronologique de l'histoire, et retient automatiquement la position de lecture.
 ## Fonctionnalités
 
 **Suivi de visionnage**
-- **141 épisodes** dans l'ordre chronologique (2018 → aujourd'hui), groupés par arc :
+- **141 épisodes** (126 dans la série, récaps inclus, + 15 hors-série) dans l'ordre chronologique (2018 → aujourd'hui), groupés par arc :
   Aria (S1–S3), Le Continent du Phénix, Le Tribunal des Dragons (S5–S7), Justice,
   Galaxies, Valenthia, Sheol, Justice 1937, Odyssée.
 - **Lecteur YouTube intégré** : la position est sauvegardée toutes les 5 secondes.
@@ -24,7 +24,7 @@ chronologique de l'histoire, et retient automatiquement la position de lecture.
 - **Épisode terminé automatiquement** à 95 % de visionnage.
 - **Marquage manuel « vu »** : une case par épisode, et « Tout marquer vu » par saison pour rattraper ce qu'on a déjà regardé ailleurs.
 - **Filtres** Tous / À voir / En cours / Terminé, sections repliables avec compteur (`9/15`) et progression globale dans l'en-tête.
-- **Section « Hors-série »** à part (crossovers, spéciaux, récaps) : suivie comme le reste, mais non comptée dans la progression de la trame principale.
+- **Section « Hors-série »** à part (crossovers et spéciaux) : suivie comme le reste, mais non comptée dans la progression de la trame principale.
 - **Export / import de la progression** (fichier JSON) : pour sauvegarder, ou changer de téléphone / passer du navigateur à l'app. L'import **fusionne** avec la progression actuelle (un épisode terminé l'emporte, sinon la position la plus récente), sans rien supprimer, et ignore les fichiers invalides ou les épisodes inconnus.
 - **100 % local** : la progression est stockée dans le navigateur ou l'app, aucun compte, aucun serveur.
 
@@ -88,9 +88,9 @@ ou `youtu.be/`), le code, le titre et la date. Pour un hors-série, ajouter
 Prérequis : JDK 17 et SDK Android (platform 34, build-tools 34.0.0) dans `~/android-build`.
 
 ```bash
-echo "1.6 7" > android/version      # nom de version, code de version
+echo "1.7 8" > android/version      # nom de version, code de version
 ./build-apk.sh                        # → dist/GameOfRoles.apk
-gh release create v1.6 dist/GameOfRoles.apk
+gh release create v1.7 dist/GameOfRoles.apk
 ```
 
 L'APK est signé avec `~/android-build/gor.keystore` (créée au premier build).
