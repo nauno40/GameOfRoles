@@ -166,6 +166,7 @@ const GOR_EPISODES = [
 
   // ---- Odyssée (en cours — 2026) ----
   { arc: "Odyssée", id: "jKtBmDHAJa8", code: "EP01", title: "L'Ascension", date: "2026-09-16" },
+  { arc: "Odyssée", id: "3Ix8k-bXgCk", code: "EP02", title: "Chasse au trésor", date: "2026-09-30" },
 
   // ---- Hors-série : crossovers et spéciaux, hors trame principale ----
   // Volontairement à part (voir README) : pas nécessaires pour suivre l'histoire,
