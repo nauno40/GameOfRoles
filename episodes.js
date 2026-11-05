@@ -165,8 +165,10 @@ const GOR_EPISODES = [
   { arc: "Justice 1937", id: "sjImhSsMuvc", code: "EP03", title: "Épisode 03", date: "2026-07-01" },
 
   // ---- Odyssée (en cours — 2026) ----
-  { arc: "Odyssée", id: "jKtBmDHAJa8", code: "EP01", title: "L'Ascension", date: "2026-09-16" },
-  { arc: "Odyssée", id: "3Ix8k-bXgCk", code: "EP02", title: "Chasse au trésor", date: "2026-09-30" },
+  { arc: "Odyssée", id: "JICShFmWdaY", code: "PROLOGUE", title: "Une nouvelle aventure commence !", date: "2026-06-05" },
+  { arc: "Odyssée", id: "jKtBmDHAJa8", code: "EP01", title: "L'Ascension", date: "2026-09-17" },
+  { arc: "Odyssée", id: "3Ix8k-bXgCk", code: "EP02", title: "Chasse au trésor", date: "2026-10-01" },
+  { arc: "Odyssée", id: "ttI4i0fjwpE", code: "EP03", title: "Quatre destinées", date: "2026-10-30" },
 
   // ---- Hors-série : crossovers et spéciaux, hors trame principale ----
   // Volontairement à part (voir README) : pas nécessaires pour suivre l'histoire,
